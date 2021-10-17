@@ -26,7 +26,7 @@ class HandDetector:
 
         return img
 
-    def find_position(self, img, hand_number=0, draw=True):
+    def find_position(self, img, hand_number=0):
         landmark_list = []
 
         if self.results.multi_hand_landmarks:
@@ -37,8 +37,5 @@ class HandDetector:
                 cx, cy = int(lm.x * w), int(lm.y * h)
 
                 landmark_list.append((index, cx, cy))
-
-                if draw:
-                    cv2.circle(img, (cx, cy), 10, (255, 110, 0), cv2.FILLED)
 
         return landmark_list
