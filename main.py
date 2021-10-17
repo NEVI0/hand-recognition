@@ -1,21 +1,19 @@
 import cv2
-import mediapipe as mp
+import hand_tracking_module as htm
 
-cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
-mpHands = mp.solutions.hands
-hands = mpHands.Hands()
-mpDraw = mp.solutions.drawing_utils
 
-while 1:
+def main():
+    cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
+    detector = htm.HandDetector()
 
-    success, img = cap.read()
-    imgRgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-    results = hands.process(imgRgb)
+    while True:
+        success, img = cap.read()
+        img = detector.find_hands(img)
+        detector.find_position(img)
 
-    if results.multi_hand_landmarks:
-        for handLms in results.multi_hand_landmarks:
-            mpDraw.draw_landmarks(img, handLms, mpHands.HAND_CONNECTIONS)
+        cv2.imshow("Image", img)
+        cv2.waitKey(1)
 
-    cv2.imshow("Image", img)
-    cv2.waitKey(1)
 
+if __name__ == '__main__':
+    main()
