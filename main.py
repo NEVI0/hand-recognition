@@ -1,4 +1,5 @@
-import cv2, math
+import cv2
+import math
 import hand_tracking_module as htm
 
 
@@ -34,6 +35,11 @@ def main():
 
         cv2.imshow("Image", img)
         cv2.waitKey(1)
+
+        if cv2.getWindowProperty('Image', cv2.WND_PROP_VISIBLE) < 1:
+            break
+
+    cv2.destroyAllWindows()
 
 
 if __name__ == '__main__':
