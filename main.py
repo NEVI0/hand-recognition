@@ -1,9 +1,21 @@
 import cv2
 import math
+import numpy as np
 import hand_tracking_module as htm
+
+from ctypes import cast, POINTER
+from comtypes import CLSCTX_ALL
+from pycaw.pycaw import AudioUtilities, IAudioEndpointVolume
 
 
 def main():
+    devices = AudioUtilities.GetSpeakers()
+    interface = devices.Activate(IAudioEndpointVolume._iid_, CLSCTX_ALL, None)
+    volume_controller = cast(interface, POINTER(IAudioEndpointVolume))
+
+    vol_range = volume_controller.GetVolumeRange()
+    min_vol, max_vol = vol_range[0], vol_range[1]
+
     cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
     detector = htm.HandDetector()
 
@@ -27,11 +39,8 @@ def main():
 
             length = math.hypot(finger_2[0] - finger_1[0], finger_2[1] - finger_1[1])
 
-            if length > 150:
-                cv2.circle(img, center_line, 8, (224, 53, 53), cv2.FILLED)
-
-            if length < 50:
-                cv2.circle(img, center_line, 8, (226, 148, 52), cv2.FILLED)
+            volume = np.interp(length, [50, 250], [min_vol, max_vol])
+            volume_controller.SetMasterVolumeLevel(volume, None)
 
         cv2.imshow("Image", img)
         cv2.waitKey(1)
