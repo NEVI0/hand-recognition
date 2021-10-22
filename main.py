@@ -66,3 +66,9 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+
+# TODO - Add a square around the hand
+# TODO - Add the number of the hand above it
+# TODO - Add volume bar at the left side of the screen
+# TODO - Add FPS text at the top of the screen
