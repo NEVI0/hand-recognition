@@ -2,7 +2,7 @@ import cv2
 import sys
 import math
 import numpy as np
-import hand_tracking_module as htm
+import hand_detector as hd
 
 from ctypes import cast, POINTER
 from comtypes import CLSCTX_ALL
@@ -28,7 +28,7 @@ def main():
     min_vol, max_vol = vol_range[0], vol_range[1]
 
     cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
-    detector = htm.HandDetector()
+    detector = hd.HandDetector()
 
     while True:
         success, img = cap.read()
