@@ -1,6 +1,7 @@
 import cv2
 import sys
 import math
+import keyboard
 import numpy as np
 import hand_detector as hd
 
@@ -10,6 +11,12 @@ from pycaw.pycaw import AudioUtilities, IAudioEndpointVolume
 
 RED_COLOR = (0, 0, 255)
 ORANGE_COLOR = (0, 127, 255)
+
+MODES = [
+    {'name': 'Counter', 'key': '1'},
+    {'name': 'Volume Controller', 'key': '2'},
+    {'name': 'Object Moving', 'key': '3'}
+]
 
 
 def main():
@@ -53,6 +60,9 @@ def main():
             volume = np.interp(length, [50, 250], [min_vol, max_vol])
             volume_controller.SetMasterVolumeLevel(volume, None)
 
+        if keyboard.is_pressed('1'):
+            print('Key "1" was pressed!')
+
         if use_analytic_mode == 'Y' or use_analytic_mode == 'y':
             cv2.imshow("Analytic Camera Mode", img)
             cv2.waitKey(1)
@@ -66,9 +76,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-
-# TODO - Add a square around the hand
-# TODO - Add the number of the hand above it
-# TODO - Add volume bar at the left side of the screen
-# TODO - Add FPS text at the top of the screen
