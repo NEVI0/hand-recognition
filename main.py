@@ -2,15 +2,17 @@ import cv2
 import sys
 import math
 import keyboard
-import numpy as np
 import hand_detector as hd
-
-from ctypes import cast, POINTER
-from comtypes import CLSCTX_ALL
-from pycaw.pycaw import AudioUtilities, IAudioEndpointVolume
+import volume_controller as vc
 
 RED_COLOR = (0, 0, 255)
+GREEN_COLOR = (0, 255, 0)
 ORANGE_COLOR = (0, 127, 255)
+
+FONT_FAMILY = cv2.FONT_HERSHEY_SIMPLEX
+FONT_LINE = cv2.LINE_AA
+FONT_SCALE = 0.75
+FONT_SIZE = 2
 
 MODES = [
     {'name': 'Counter', 'key': '1'},
@@ -20,22 +22,17 @@ MODES = [
 
 
 def main():
-    use_analytic_mode = input(' - Do you want to use analytic mode? (Y / n) ')
+    use_analytic_mode = 'Y'
+    # use_analytic_mode = input(' - Do you want to use analytic mode? (Y / n) ')
 
     if use_analytic_mode == 'Y' or use_analytic_mode == 'y':
         print(' - Press "X" button to stop running!')
     else:
         print(' - Press "Ctrl + C" to stop running!')
 
-    devices = AudioUtilities.GetSpeakers()
-    interface = devices.Activate(IAudioEndpointVolume._iid_, CLSCTX_ALL, None)
-    volume_controller = cast(interface, POINTER(IAudioEndpointVolume))
-
-    vol_range = volume_controller.GetVolumeRange()
-    min_vol, max_vol = vol_range[0], vol_range[1]
-
     cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
     detector = hd.HandDetector()
+    volume = vc.VolumeController()
 
     while True:
         success, img = cap.read()
@@ -56,14 +53,14 @@ def main():
             cv2.line(img, finger_1, finger_2, ORANGE_COLOR, 4)
 
             length = math.hypot(finger_2[0] - finger_1[0], finger_2[1] - finger_1[1])
-
-            volume = np.interp(length, [50, 250], [min_vol, max_vol])
-            volume_controller.SetMasterVolumeLevel(volume, None)
+            volume.set_volume(length)
 
         if keyboard.is_pressed('1'):
             print('Key "1" was pressed!')
 
         if use_analytic_mode == 'Y' or use_analytic_mode == 'y':
+            cv2.putText(img, 'Analytic Mode', (10, 30), FONT_FAMILY, FONT_SCALE, GREEN_COLOR, FONT_SIZE, FONT_LINE)
+
             cv2.imshow("Analytic Camera Mode", img)
             cv2.waitKey(1)
 
