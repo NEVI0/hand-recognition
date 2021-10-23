@@ -1,29 +1,15 @@
-import cv2
 import sys
-import math
 import keyboard
 import hand_detector as hd
 import volume_controller as vc
+import mode_controller as mc
 
-RED_COLOR = (0, 0, 255)
-GREEN_COLOR = (0, 255, 0)
-ORANGE_COLOR = (0, 127, 255)
-
-FONT_FAMILY = cv2.FONT_HERSHEY_SIMPLEX
-FONT_LINE = cv2.LINE_AA
-FONT_SCALE = 0.75
-FONT_SIZE = 2
-
-MODES = [
-    {'name': 'Counter', 'key': '1'},
-    {'name': 'Volume Controller', 'key': '2'},
-    {'name': 'Object Moving', 'key': '3'}
-]
+from constants import *
 
 
 def main():
-    use_analytic_mode = 'Y'
-    # use_analytic_mode = input(' - Do you want to use analytic mode? (Y / n) ')
+    selected_mode = 1
+    use_analytic_mode = input(' - Do you want to use analytic mode? (Y / n) ')
 
     if use_analytic_mode == 'Y' or use_analytic_mode == 'y':
         print(' - Press "X" button to stop running!')
@@ -32,7 +18,8 @@ def main():
 
     cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
     detector = hd.HandDetector()
-    volume = vc.VolumeController()
+    volume_ctrl = vc.VolumeController()
+    mode_ctrl = mc.ModeController()
 
     while True:
         success, img = cap.read()
@@ -40,31 +27,27 @@ def main():
         landmark_list = detector.find_position(img)
 
         if len(landmark_list) > 0:
-
-            finger_1 = (landmark_list[4][1], landmark_list[4][2])
-            finger_2 = (landmark_list[8][1], landmark_list[8][2])
-
-            between_fingers = ((finger_1[0] + finger_2[0]) // 2, (finger_1[1] + finger_2[1]) // 2)
-
-            cv2.circle(img, between_fingers, 8, RED_COLOR, cv2.FILLED)
-            cv2.circle(img, finger_1, 8, ORANGE_COLOR, cv2.FILLED)
-            cv2.circle(img, finger_2, 8, ORANGE_COLOR, cv2.FILLED)
-
-            cv2.line(img, finger_1, finger_2, ORANGE_COLOR, 4)
-
-            length = math.hypot(finger_2[0] - finger_1[0], finger_2[1] - finger_1[1])
-            volume.set_volume(length)
+            if selected_mode == 1:
+                mode_ctrl.use_counter_mode()
+            if selected_mode == 2:
+                mode_ctrl.use_volume_mode(img, volume_ctrl, landmark_list)
+            if selected_mode == 3:
+                mode_ctrl.use_object_moving_mode()
 
         if keyboard.is_pressed('1'):
-            print('Key "1" was pressed!')
+            selected_mode = 1
+        if keyboard.is_pressed('2'):
+            selected_mode = 2
+        if keyboard.is_pressed('3'):
+            selected_mode = 3
 
         if use_analytic_mode == 'Y' or use_analytic_mode == 'y':
-            cv2.putText(img, 'Analytic Mode', (10, 30), FONT_FAMILY, FONT_SCALE, GREEN_COLOR, FONT_SIZE, FONT_LINE)
 
-            cv2.imshow("Analytic Camera Mode", img)
+            mode_ctrl.display_selected_mode(img, selected_mode)
+            cv2.imshow(WINDOW_NAME, img)
             cv2.waitKey(1)
 
-            if cv2.getWindowProperty('Analytic Camera Mode', cv2.WND_PROP_VISIBLE) < 1:
+            if cv2.getWindowProperty(WINDOW_NAME, cv2.WND_PROP_VISIBLE) < 1:
                 break
 
     cv2.destroyAllWindows()
