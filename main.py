@@ -28,11 +28,13 @@ def main():
 
         if len(landmark_list) > 0:
             if selected_mode == 1:
-                mode_ctrl.use_counter_mode()
+                mode_ctrl.use_counter_mode(img, landmark_list)
             if selected_mode == 2:
                 mode_ctrl.use_volume_mode(img, volume_ctrl, landmark_list)
             if selected_mode == 3:
-                mode_ctrl.use_object_moving_mode()
+                mode_ctrl.use_object_moving_mode(img)
+        else:
+            cv2.putText(img, 'Hand not Detected', (200, 235), FONT_FAMILY, FONT_SCALE, RED_COLOR, FONT_SIZE, FONT_LINE)
 
         if keyboard.is_pressed('1'):
             selected_mode = 1
