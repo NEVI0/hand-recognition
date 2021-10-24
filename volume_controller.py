@@ -4,6 +4,8 @@ from ctypes import cast, POINTER
 from comtypes import CLSCTX_ALL
 from pycaw.pycaw import AudioUtilities, IAudioEndpointVolume
 
+from constants import *
+
 
 class VolumeController:
     def __init__(self):
@@ -17,3 +19,12 @@ class VolumeController:
     def set_volume(self, length):
         volume = np.interp(length, [50, 250], [self.min_vol, self.max_vol])
         self.volume_controller.SetMasterVolumeLevel(volume, None)
+
+        return np.interp(length, [50, 250], [400, 100])
+
+    @staticmethod
+    def display_volume_bar(img, volume_bar):
+        cv2.rectangle(img, (600, 100), (620, 400), BLACK_COLOR, 2)
+
+        if volume_bar:
+            cv2.rectangle(img, (600, int(volume_bar)), (620, 400), YELLOW_COLOR, cv2.FILLED)
