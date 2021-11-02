@@ -1,6 +1,7 @@
 import cv2
 
 WINDOW_NAME = 'Analytic Camera Mode'
+FINGERS = [4, 8, 12, 16, 20]
 
 RED_COLOR = (0, 0, 255)
 GREEN_COLOR = (0, 255, 0)

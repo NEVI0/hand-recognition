@@ -27,28 +27,21 @@ class ModeController:
 
     @staticmethod
     def use_counter_mode(img, landmark_list):
-        size = FONT_SIZE - 1
-        scale = FONT_SCALE - 0.10
+        founded_fingers = []
 
-        if len(landmark_list[4]) > 0:
-            finger_1 = (landmark_list[4][1] - 5, landmark_list[4][2] - 15)
-            cv2.putText(img, '1', finger_1, FONT_FAMILY, scale, WHITE_COLOR, size, FONT_LINE)
+        if landmark_list[FINGERS[0]][1] < landmark_list[FINGERS[0] - 1][1]:
+            founded_fingers.append(1)
+        else:
+            founded_fingers.append(0)
 
-        if len(landmark_list[8]) > 0:
-            finger_2 = (landmark_list[8][1] - 5, landmark_list[8][2] - 15)
-            cv2.putText(img, '2', finger_2, FONT_FAMILY, scale, WHITE_COLOR, size, FONT_LINE)
+        for index in range(1, 5):
+            if landmark_list[FINGERS[index]][2] < landmark_list[FINGERS[index] - 2][2]:
+                founded_fingers.append(1)
+            else:
+                founded_fingers.append(0)
 
-        if len(landmark_list[12]) > 0:
-            finger_3 = (landmark_list[12][1] - 5, landmark_list[12][2] - 15)
-            cv2.putText(img, '3', finger_3, FONT_FAMILY, scale, WHITE_COLOR, size, FONT_LINE)
-
-        if len(landmark_list[16]) > 0:
-            finger_4 = (landmark_list[16][1] - 5, landmark_list[16][2] - 15)
-            cv2.putText(img, '4', finger_4, FONT_FAMILY, scale, WHITE_COLOR, size, FONT_LINE)
-
-        if len(landmark_list[20]) > 0:
-            finger_5 = (landmark_list[20][1] - 5, landmark_list[20][2] - 15)
-            cv2.putText(img, '5', finger_5, FONT_FAMILY, scale, WHITE_COLOR, size, FONT_LINE)
+        fingers_counted = str(founded_fingers.count(1))
+        cv2.putText(img, fingers_counted, (530, 465), FONT_FAMILY, 5, WHITE_COLOR, 10, FONT_LINE)
 
     @staticmethod
     def use_volume_mode(img, volume_ctrl, landmark_list):
