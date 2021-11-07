@@ -3,6 +3,11 @@ from constants import *
 
 
 class ModeController:
+    cx: int = 100
+    cy: int = 100
+    w: int = 75
+    h: int = 75
+
     def __init__(self):
         pass
 
@@ -60,6 +65,15 @@ class ModeController:
         volume_bar = volume_ctrl.set_volume(length)
         volume_ctrl.display_volume_bar(img, volume_bar)
 
-    @staticmethod
-    def use_object_moving_mode(img):
-        cv2.rectangle(img, (250, 250), (300, 300), (255, 255, 255), -1)
+    def use_object_moving_mode(self, img, landmark_list):
+        rectangle_color = WHITE_COLOR
+        index_finger = (landmark_list[8][1], landmark_list[8][2])
+
+        if self.cx - self.w // 2 < index_finger[0] < self.cx + self.w // 2 and self.cy - self.h // 2 < index_finger[1] < self.cy + self.h // 2:
+            self.cx, self.cy = index_finger
+            rectangle_color = YELLOW_COLOR
+
+        start_position = (self.cx - self.w // 2, self.cy - self.h // 2)
+        end_position = (self.cx + self.w // 2, self.cy + self.h // 2)
+
+        cv2.rectangle(img, start_position, end_position, rectangle_color, cv2.FILLED)
